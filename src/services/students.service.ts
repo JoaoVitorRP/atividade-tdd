@@ -1,4 +1,5 @@
-import { notFoundError } from "errors/notFoundError";
+import { conflictError, notFoundError } from "errors";
+import { StudentPostRequest } from "protocols";
 import { studentsRepository } from "repositories/students.repository";
 
 async function getStudents() {
@@ -17,7 +18,18 @@ async function getFirstStudent() {
   return student;
 }
 
+async function postStudent(studentData: StudentPostRequest) {
+  const repeatedStudent = await studentsRepository.findStudentByName(studentData.name);
+
+  if (repeatedStudent) throw conflictError();
+
+  const createdStudent = await studentsRepository.createStudent(studentData);
+
+  return createdStudent;
+}
+
 export const studentsService = {
   getStudents,
   getFirstStudent,
+  postStudent,
 };

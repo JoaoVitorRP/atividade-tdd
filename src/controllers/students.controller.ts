@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { StudentPostRequest } from "protocols";
 import { studentsService } from "services/students.service";
 
 export async function getStudents(req: Request, res: Response) {
@@ -17,5 +18,16 @@ export async function getFirstStudent(req: Request, res: Response) {
     return res.status(httpStatus.OK).send(student);
   } catch (err) {
     return res.status(httpStatus.NOT_FOUND).send(err.message);
+  }
+}
+
+export async function postStudent(req: Request, res: Response) {
+  const studentData = req.body as StudentPostRequest;
+
+  try {
+    const createdStudent = await studentsService.postStudent(studentData);
+    return res.status(httpStatus.CREATED).send(createdStudent);
+  } catch (err) {
+    return res.status(httpStatus.CONFLICT).send(err.message);
   }
 }
